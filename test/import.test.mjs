@@ -5,7 +5,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { homedir } from 'node:os';
 import { parseGlb, buildGlb, readAccessor } from '../src/glb.js';
 import { readItem, sha256 } from '../src/index.js';
 import { checkItem } from '../src/checker.js';
@@ -286,8 +285,9 @@ test('a 0.x "Other" licence with a VRoid Hub licence address is read from the ad
 
 // ---- real avatars, when present on this machine (third-party art is never in git) -----------------------
 
-const ELENA = process.env.VRMXA_ELENA_VRM || join(homedir(), 'Documents/VRM/Elena.vrm');
-test('Elena: five items, valid against Spec, MToon and springs kept, the 31.3 mm lift on the boots', { skip: noSpec || (!existsSync(ELENA) && 'Elena.vrm is not on this machine') }, async () => {
+// A local VRoid model in shoes, when VRMXA_ELENA_VRM names it (never in this repository).
+const ELENA = process.env.VRMXA_ELENA_VRM || '/nonexistent/Elena.vrm';
+test('Elena: five items, valid against Spec, MToon and springs kept, the 31.3 mm lift on the boots', { skip: noSpec || (!existsSync(ELENA) && 'set VRMXA_ELENA_VRM to run it') }, async () => {
   const spec = specVrm();
   const src = await imp.openSource(new Uint8Array(readFileSync(ELENA)), { fileName: 'Elena.vrm' });
   const rigs = imp.importRigs(src, spec);
