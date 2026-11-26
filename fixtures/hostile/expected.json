@@ -1,0 +1,22 @@
+{
+  "control.vrmxa": [],
+  "path-escape.vrmxa": [
+    "zip.entry-name"
+  ],
+  "lying-hash.vrmxa": [
+    "container.hash"
+  ],
+  "huge-entry.vrmxa": [
+    "zip.ratio"
+  ],
+  "broken-db.vrmxa": [
+    "db.header"
+  ],
+  "db-trigger.vrmxa": [
+    "db.extra-object"
+  ],
+  "item-external.vrmxw": [
+    "model.external",
+    "container.inventory"
+  ]
+}

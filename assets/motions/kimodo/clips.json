@@ -1,0 +1,1532 @@
+{
+  "schema_version": 1,
+  "generated_by": "tools/kimodo-to-vrma/kimodo_to_vrma.py",
+  "format": "VRM Animation 1.0 (VRMC_vrm_animation), identity rest rotations, 30 fps LINEAR keys",
+  "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md.",
+  "source": {
+    "project": "Bingeljell/image-to-3dlab",
+    "path": "image_to_3dlab/motions/",
+    "generator": "NVIDIA Kimodo (text to motion), SOMA 77-joint skeleton",
+    "upstream_note": "Clips made with NVIDIA Kimodo (NVIDIA Open Model License). NVIDIA claims no ownership of outputs."
+  },
+  "grounded_to": {
+    "file": "spec.vrm",
+    "hips_height_m": 0.8934
+  },
+  "fields": {
+    "seconds / frames / fps": "of the .vrma file: frames is the number of keys, seconds the last key's time",
+    "loop": "true when the file repeats seamlessly: its last key is its first pose",
+    "in_place": "true when horizontal hips travel was removed, so code moves the character",
+    "speed": "upstream's default playback rate for the move; not baked into the keys unless passes.speed_baked",
+    "passes": "what the converter did to the stored clip; passes.loop.source_start/end are frames of the .npz, and the last passes.loop.blend_frames keys (the closing key included) are not plain copies of source frames; passes.ground is in the grounding avatar's metres"
+  },
+  "aliases": {
+    "run": "run_b",
+    "wave": "wave_b",
+    "sit": "sit_b",
+    "strafe_left": "strafe_left_b",
+    "idle_b": "idle_restless",
+    "fight_stance": "fight_stance_b",
+    "punch_combo": "punch_combo_b",
+    "walk_b": "walk",
+    "jump_b": "jump",
+    "kick_b": "kick",
+    "dance_b": "dance",
+    "hit_react_b": "hit_react",
+    "cheer_b": "cheer",
+    "roll_b": "roll"
+  },
+  "clips": [
+    {
+      "id": "idle",
+      "label": "Idle (subtle)",
+      "file": "idle.vrma",
+      "seconds": 7.0,
+      "frames": 211,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person stands idle, breathing calmly. A person standing idle turns their head to look to the left. A person standing idle turns their head to look to the right.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "whole",
+          "source_start": 0,
+          "source_end": 209,
+          "period_frames": 210,
+          "blend_frames": 8,
+          "seam_gap_percent": 5.81,
+          "already_clean": false,
+          "wrap_roughness": 11.23
+        },
+        "root_travel_removed_m": 0.0236,
+        "ground": {
+          "lowest_sole_before_m": -0.0094,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0094,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0094,
+          "mean_lift_m": 0.0065,
+          "frames_lifted": 211,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "idle.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 210,
+        "fps": 30.0,
+        "preset_seconds": 7.0,
+        "preset_loop": false,
+        "preset_in_place": true,
+        "sha256": "282a67b3674cdca4c5149a6373fddcb6df142a8664d83062849ac3d9de3ee1dd"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "idle_restless",
+      "label": "Idle (restless)",
+      "file": "idle_restless.vrma",
+      "seconds": 7.0,
+      "frames": 211,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person stands idle, breathing calmly. A person standing idle turns their head to look to the left. A person standing idle turns their head to look to the right.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "whole",
+          "source_start": 0,
+          "source_end": 209,
+          "period_frames": 210,
+          "blend_frames": 14,
+          "seam_gap_percent": 13.6,
+          "already_clean": false,
+          "wrap_roughness": 8.88
+        },
+        "root_travel_removed_m": 0.7596,
+        "ground": {
+          "lowest_sole_before_m": -0.0096,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0096,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0096,
+          "mean_lift_m": 0.0026,
+          "frames_lifted": 207,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "idle_restless.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 210,
+        "fps": 30.0,
+        "preset_seconds": 7.0,
+        "preset_loop": false,
+        "preset_in_place": true,
+        "sha256": "601bd160b782cb6b4d47fe54469bc6677375a23c6b7a1c13695948bd2850361f"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "walk",
+      "label": "Walk",
+      "file": "walk.vrma",
+      "seconds": 1.0333,
+      "frames": 32,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person walks forward.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 72,
+          "source_end": 103,
+          "period_frames": 31,
+          "blend_frames": 5,
+          "seam_gap_percent": 2.105
+        },
+        "root_travel_removed_m": 5.3374,
+        "ground": {
+          "lowest_sole_before_m": -0.008,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.008,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.008,
+          "mean_lift_m": 0.0031,
+          "frames_lifted": 32,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "walk.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "56d1509f2d62783fd445b18e91339bfea2a5f48eaa0fbc6afb933ae687a2b829"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "walk_woman",
+      "label": "Walk (female)",
+      "file": "walk_woman.vrma",
+      "seconds": 2.3667,
+      "frames": 72,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A woman walks forward.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 18,
+          "source_end": 89,
+          "period_frames": 71,
+          "blend_frames": 5,
+          "seam_gap_percent": 1.973
+        },
+        "root_travel_removed_m": 4.7006,
+        "ground": {
+          "lowest_sole_before_m": -0.0031,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0031,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0031,
+          "mean_lift_m": 0.0004,
+          "frames_lifted": 30,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "walk_woman.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "a803410504f213f60bc9c41b77b4dd667a00c1b84b31f39aeb6ffebdecfe7a6c"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "run_b",
+      "label": "Jog",
+      "file": "run_b.vrma",
+      "seconds": 1.2,
+      "frames": 37,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person runs forward.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 12,
+          "source_end": 48,
+          "period_frames": 36,
+          "blend_frames": 9,
+          "seam_gap_percent": 6.903
+        },
+        "root_travel_removed_m": 9.7669,
+        "ground": {
+          "lowest_sole_before_m": -0.0044,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0044,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0044,
+          "mean_lift_m": 0.0003,
+          "frames_lifted": 12,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "run_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "a13e177f76780a993e769d94800fd565ec3c2218c311050c1256ab41e0eb850e"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "sprint",
+      "label": "Sprint",
+      "file": "sprint.vrma",
+      "seconds": 0.7,
+      "frames": 22,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person sprints forward at full speed.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "whole",
+          "source_start": 0,
+          "source_end": 20,
+          "period_frames": 21,
+          "blend_frames": 1,
+          "seam_gap_percent": 9.712,
+          "already_clean": true,
+          "wrap_roughness": 1.15
+        },
+        "root_travel_removed_m": 0.002,
+        "ground": {
+          "lowest_sole_before_m": -0.012,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.012,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.012,
+          "mean_lift_m": 0.0039,
+          "frames_lifted": 16,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "sprint.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 21,
+        "fps": 30.0,
+        "preset_seconds": 0.7,
+        "preset_loop": false,
+        "preset_in_place": true,
+        "sha256": "c5f300bb2c551b63171a11ac9d2997fbf6c3f75088914677d509589a65f14077"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "jump",
+      "label": "Jump",
+      "file": "jump.vrma",
+      "seconds": 2.4667,
+      "frames": 75,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person jumps up in place.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0093,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0093,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0093,
+          "mean_lift_m": 0.0031,
+          "frames_lifted": 61,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "jump.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 75,
+        "fps": 30.0,
+        "preset_seconds": 2.5,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "b707263305bde36e68be9828fc46a366c8c55e5f95a94cbad9caa2f0a8672bf3"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "wave_b",
+      "label": "Wave",
+      "file": "wave_b.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person waves with their right hand.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0035,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0035,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0035,
+          "mean_lift_m": 0.0021,
+          "frames_lifted": 90,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "wave_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "15f92a2b8b4eb43800f5f7a5497f56db828ae70dee55436fb23e9005a7e617cb"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "punch",
+      "label": "Hook",
+      "file": "punch.vrma",
+      "seconds": 1.9667,
+      "frames": 60,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person throws a punch with their right fist.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.3,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0057,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0057,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0057,
+          "mean_lift_m": 0.0031,
+          "frames_lifted": 60,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "punch.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 60,
+        "fps": 30.0,
+        "preset_seconds": 2.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "7793e1d60be5455df0091e833846b28bd5000c2876fc6fec522b0821bc4da8c4"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "punch_b",
+      "label": "Jab",
+      "file": "punch_b.vrma",
+      "seconds": 1.9667,
+      "frames": 60,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person throws a punch with their right fist.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.3,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0087,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0087,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0087,
+          "mean_lift_m": 0.0066,
+          "frames_lifted": 60,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "punch_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 60,
+        "fps": 30.0,
+        "preset_seconds": 2.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "49482b024b1f05526f4c20d9e100586b91ca3d96046674048cedc00f2f8c990f"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "one_two",
+      "label": "One-two combo",
+      "file": "one_two.vrma",
+      "seconds": 4.4667,
+      "frames": 135,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person in a boxing stance throws a fast left jab. A person throws a powerful straight right punch.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.5,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0043,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0043,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0043,
+          "mean_lift_m": 0.0005,
+          "frames_lifted": 67,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "one_two.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 135,
+        "fps": 30.0,
+        "preset_seconds": 4.5,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "f1e9b9ada39ef83ac39e4ca60b9d088258c59dd06046f89387ff2dc1e4900f0c"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "kick",
+      "label": "Kick",
+      "file": "kick.vrma",
+      "seconds": 1.9667,
+      "frames": 60,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person kicks forward with their right leg.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0342,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0342,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0342,
+          "mean_lift_m": 0.0108,
+          "frames_lifted": 60,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "kick.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 60,
+        "fps": 30.0,
+        "preset_seconds": 2.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "23df0a452697e9fd2ee22751554efce23014cf910184dd5986e3dc6492448201"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "dance",
+      "label": "Dance",
+      "file": "dance.vrma",
+      "seconds": 4.9667,
+      "frames": 150,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person dances happily.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0044,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0044,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0044,
+          "mean_lift_m": 0.0004,
+          "frames_lifted": 52,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "dance.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 150,
+        "fps": 30.0,
+        "preset_seconds": 5.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "2d866752416ed41f7c935bba921bfcac31d202b0ab3f9961abf5c7c5e3fb8e14"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "robot_dance",
+      "label": "Robot dance",
+      "file": "robot_dance.vrma",
+      "seconds": 5.9667,
+      "frames": 180,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person does a robot dance with stiff, jerky arm and body movements.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0066,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0066,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0066,
+          "mean_lift_m": 0.0009,
+          "frames_lifted": 64,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "robot_dance.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 180,
+        "fps": 30.0,
+        "preset_seconds": 6.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "78a0caebcf2b0461e39c42642917971c4751e947d9f5eae2a19ed51055a981a8"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "sit_b",
+      "label": "Sit down",
+      "file": "sit_b.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person sits down on the ground.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0951,
+          "lowest_sole_after_m": -0.0951,
+          "lowest_sole_on_feet_before_m": -0.018,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.02,
+          "mean_lift_m": 0.0016,
+          "frames_lifted": 24,
+          "frames_off_feet": 72,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "sit_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "b60484c08400aafdac6df071203d9ff082c87f0c78c8093ed1d7cae25f006a1f"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "sneak",
+      "label": "Sneaky walk",
+      "file": "sneak.vrma",
+      "seconds": 1.5667,
+      "frames": 48,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person sneaks forward in a crouch.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 39,
+          "source_end": 86,
+          "period_frames": 47,
+          "blend_frames": 5,
+          "seam_gap_percent": 1.552
+        },
+        "root_travel_removed_m": 2.9801,
+        "ground": {
+          "lowest_sole_before_m": -0.0071,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0071,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0071,
+          "mean_lift_m": 0.0015,
+          "frames_lifted": 26,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "sneak.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "f1bade35937e1a92faa3aab9d4ed4401dccc6ee2d300a5742a53b1a4f2b6bcea"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "sneak_b",
+      "label": "Sneak (take B)",
+      "file": "sneak_b.vrma",
+      "seconds": 1.3667,
+      "frames": 42,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person sneaks forward in a crouch.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 1,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 58,
+          "source_end": 99,
+          "period_frames": 41,
+          "blend_frames": 5,
+          "seam_gap_percent": 2.005
+        },
+        "root_travel_removed_m": 3.2187,
+        "ground": {
+          "lowest_sole_before_m": 0.0003,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": 0.0003,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": -0.0003,
+          "mean_lift_m": -0.0003,
+          "frames_lifted": 0,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0003
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "sneak_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "e5fa6c324beb8118ce101adb291c0ad0d07c0b1b8dea98838bd3557a8581c88a"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "crouch_sneak",
+      "label": "Crouch sneak",
+      "file": "crouch_sneak.vrma",
+      "seconds": 1.6,
+      "frames": 49,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person is crouching low and sneaking forward stealthily.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": null,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 41,
+          "source_end": 89,
+          "period_frames": 48,
+          "blend_frames": 5,
+          "seam_gap_percent": 1.267
+        },
+        "root_travel_removed_m": 3.2932,
+        "ground": {
+          "lowest_sole_before_m": -0.0079,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0079,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0079,
+          "mean_lift_m": 0.0018,
+          "frames_lifted": 27,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "crouch_sneak.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": true,
+        "preset_in_place": true,
+        "sha256": "4455256da6a70398b64d2158ceb56a580143b663bd0f28315946c8e098ef224b"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "zombie_walk",
+      "label": "Zombie walk",
+      "file": "zombie_walk.vrma",
+      "seconds": 4.4,
+      "frames": 133,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person walks forward slowly like a zombie, both arms stretched straight out in front at shoulder height, dragging the feet.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 7,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "whole",
+          "source_start": 0,
+          "source_end": 131,
+          "period_frames": 132,
+          "blend_frames": 1,
+          "seam_gap_percent": 3.104,
+          "already_clean": true,
+          "wrap_roughness": 0.73
+        },
+        "root_travel_removed_m": 0.0048,
+        "ground": {
+          "lowest_sole_before_m": -0.0021,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0021,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0021,
+          "mean_lift_m": 0.0002,
+          "frames_lifted": 27,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "zombie_walk.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 132,
+        "fps": 30.0,
+        "preset_seconds": 4.4,
+        "preset_loop": false,
+        "preset_in_place": true,
+        "sha256": "889bc3244cca156b5ce3b437cd31dd86a02ba73ed1f88fbfa0a15505a21c5470"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "strafe_left_b",
+      "label": "Strafe left",
+      "file": "strafe_left_b.vrma",
+      "seconds": 1.2,
+      "frames": 37,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person sidesteps to the left.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 51,
+          "source_end": 87,
+          "period_frames": 36,
+          "blend_frames": 5,
+          "seam_gap_percent": 1.822
+        },
+        "root_travel_removed_m": 2.4334,
+        "ground": {
+          "lowest_sole_before_m": -0.0037,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0037,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0037,
+          "mean_lift_m": 0.0006,
+          "frames_lifted": 12,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "strafe_left_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "sha256": "aba61150cb8caa87c3b04e572f5168a7fba7cbdf05e4a7846c1f8f28d136dfd8"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "strafe_right",
+      "label": "Strafe right",
+      "file": "strafe_right.vrma",
+      "seconds": 1.2,
+      "frames": 37,
+      "fps": 30.0,
+      "loop": true,
+      "in_place": true,
+      "prompt": "A person strafes to the right, side-stepping, keeping their face forward.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": true,
+        "loop": {
+          "mode": "cycle",
+          "source_start": 51,
+          "source_end": 87,
+          "period_frames": 36,
+          "blend_frames": 5,
+          "seam_gap_percent": 1.822
+        },
+        "root_travel_removed_m": 2.4334,
+        "ground": {
+          "lowest_sole_before_m": -0.0037,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0037,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0037,
+          "mean_lift_m": 0.0006,
+          "frames_lifted": 12,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "strafe_right.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": true,
+        "mirrored_from": "strafe_left_b",
+        "sha256": "74fb31b1ca21379e315b1a18c9eade5bab907c79e2653c932796687e80f3d346"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "death",
+      "label": "Death",
+      "file": "death.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person falls backward to the ground and lies still.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0695,
+          "lowest_sole_after_m": -0.0695,
+          "lowest_sole_on_feet_before_m": -0.0491,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0505,
+          "mean_lift_m": 0.0082,
+          "frames_lifted": 29,
+          "frames_off_feet": 66,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "death.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "6947c5dc4ca9697d8f755b9ac0f71703fade508252e24bfc6fe0be51e0976f81"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "death_b",
+      "label": "Death (take B)",
+      "file": "death_b.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person falls backward to the ground and lies still.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 1,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.1013,
+          "lowest_sole_after_m": -0.1013,
+          "lowest_sole_on_feet_before_m": -0.0586,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0586,
+          "mean_lift_m": 0.0063,
+          "frames_lifted": 22,
+          "frames_off_feet": 73,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "death_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "f62bc765fbefc49544421b59cdc9ee085ac7fc9697e62d5486f7064fb89c1dae"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "death_2",
+      "label": "Death 2",
+      "file": "death_2.vrma",
+      "seconds": 3.9667,
+      "frames": 120,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person is hit, staggers backward, drops to their knees and collapses forward onto the ground, then lies completely still.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 21,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0275,
+          "lowest_sole_after_m": -0.0075,
+          "lowest_sole_on_feet_before_m": -0.0262,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0275,
+          "mean_lift_m": 0.0021,
+          "frames_lifted": 24,
+          "frames_off_feet": 91,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "death_2.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "cf9bb60789907ee6eee4ac43e1661eb4e8087261d70718bc27984dd762a5889c"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "death_2_b",
+      "label": "Death 2 (take B)",
+      "file": "death_2_b.vrma",
+      "seconds": 3.9667,
+      "frames": 120,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person is hit, staggers backward, drops to their knees and collapses forward onto the ground, then lies completely still.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 21,
+      "take": 1,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.1182,
+          "lowest_sole_after_m": -0.1182,
+          "lowest_sole_on_feet_before_m": -0.0331,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0346,
+          "mean_lift_m": 0.0035,
+          "frames_lifted": 29,
+          "frames_off_feet": 98,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "death_2_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "477358a83355c88fe1d5ab6d89ef1c59fc22d2291e84ecd205cc972325994a3b"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "hit_react",
+      "label": "Hit react",
+      "file": "hit_react.vrma",
+      "seconds": 1.9667,
+      "frames": 60,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person gets hit in the chest and staggers backward.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0141,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0141,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0141,
+          "mean_lift_m": 0.0081,
+          "frames_lifted": 60,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "hit_react.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 60,
+        "fps": 30.0,
+        "preset_seconds": 2.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "24ed8c2d01ad34ec1625fecb20c2c588ba5a984fa148f4f58332ebd79a601527"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "cheer",
+      "label": "Cheer",
+      "file": "cheer.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person raises both arms in the air and cheers.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0049,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0049,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0049,
+          "mean_lift_m": 0.0011,
+          "frames_lifted": 56,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "cheer.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "385b4c2695aacd0b676451b17f9da96150a2a19690ff24cca7c4c3e962b634b0"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "roll",
+      "label": "Roll",
+      "file": "roll.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person does a forward roll on the ground.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.1002,
+          "lowest_sole_after_m": -0.1002,
+          "lowest_sole_on_feet_before_m": -0.0204,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0246,
+          "mean_lift_m": 0.0022,
+          "frames_lifted": 31,
+          "frames_off_feet": 27,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "roll.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3.0,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "6a125f9e749d5e04ba29a2201907692d2f7e53205e4b35d90db89b889339a7bd"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "fight_stance_b",
+      "label": "Fighting stance",
+      "file": "fight_stance_b.vrma",
+      "seconds": 3.9667,
+      "frames": 120,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person bounces lightly on their feet in a fighting stance.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0006,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0006,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0006,
+          "mean_lift_m": 0.0,
+          "frames_lifted": 6,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "fight_stance_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 120,
+        "fps": 30.0,
+        "preset_seconds": 4,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "b299d787ac4fa0bf5dfe1ce813fdbc70b4f1fce5b75369bd322a014a7a40683d"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    },
+    {
+      "id": "punch_combo_b",
+      "label": "Punch combo",
+      "file": "punch_combo_b.vrma",
+      "seconds": 2.9667,
+      "frames": 90,
+      "fps": 30.0,
+      "loop": false,
+      "in_place": false,
+      "prompt": "A person throws a fast combination of punches.",
+      "made_with": "Kimodo-SOMA-RP-v1.1",
+      "seed": 1,
+      "take": 0,
+      "speed": 1.0,
+      "passes": {
+        "in_place": false,
+        "loop": {
+          "mode": "none"
+        },
+        "ground": {
+          "lowest_sole_before_m": -0.0118,
+          "lowest_sole_after_m": 0.0,
+          "lowest_sole_on_feet_before_m": -0.0118,
+          "lowest_sole_on_feet_after_m": 0.0,
+          "max_lift_m": 0.0118,
+          "mean_lift_m": 0.0045,
+          "frames_lifted": 77,
+          "frames_off_feet": 0,
+          "lowered_m": 0.0
+        },
+        "speed_baked": false
+      },
+      "source": {
+        "project": "Bingeljell/image-to-3dlab",
+        "path": "image_to_3dlab/motions/",
+        "file": "punch_combo_b.npz",
+        "generator": "Kimodo-SOMA-RP-v1.1",
+        "skeleton": "SOMA 77-joint",
+        "frames": 90,
+        "fps": 30.0,
+        "preset_seconds": 3,
+        "preset_loop": null,
+        "preset_in_place": false,
+        "sha256": "71e91815eed9b3c575dd2c422091d02d07c88eb1a95a16abd5d8693dd1538fd3"
+      },
+      "licence": "Made with NVIDIA Kimodo (Kimodo-SOMA-RP-v1.1, NVIDIA Open Model License; NVIDIA claims no ownership of outputs). Taken from image-to-3dlab (Apache-2.0) and modified. See NOTICE.md."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+# vrmxa-core's tests on every push and pull request.
+#
+# Many tests need spec.vrm, from xocialize-code/vrmxa-spec (private for now). With the secret
+# VRMXA_SPEC_DEPLOY_KEY (the private half of a read-only deploy key on vrmxa-spec) the specification is
+# checked out beside this repository, where the library looks for it, and no test may skip for want of it.
+# The tests on local copies of VRoid Hub models run only where VRMXA_DATASET_DIR is set; here they skip.
+# Without the key those tests skip and say so.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HAS_SPEC_KEY: ${{ secrets.VRMXA_SPEC_DEPLOY_KEY != '' }}
+    defaults:
+      run:
+        working-directory: vrmxa-core
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: vrmxa-core
+
+      - name: Check out the specification
+        if: env.HAS_SPEC_KEY == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: xocialize-code/vrmxa-spec
+          ssh-key: ${{ secrets.VRMXA_SPEC_DEPLOY_KEY }}
+          path: VRMXA_Specification
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: vrmxa-core/package-lock.json
+
+      - run: npm ci
+
+      - name: Test
+        run: |
+          npm test 2>&1 | tee test.log
+          test "${PIPESTATUS[0]}" -eq 0
+          if [ "$HAS_SPEC_KEY" = "true" ] && grep -q 'SKIP.*spec.vrm' test.log; then
+            echo "::error::tests needing spec.vrm were skipped although the specification is checked out"; exit 1
+          fi
+        shell: bash

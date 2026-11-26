@@ -1,0 +1,51 @@
+{
+  "name": "@xocialize/vrmxa-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The VRMXA reference library: read, write and check .vrmxa characters and .vrmxw items; apply the edit document to Spec, live in three.js and written into avatar.vrm; measure the edited body; fit tops, bottoms, one-pieces and coats to it by Spec-fit. Plain JavaScript for browsers and Node.",
+  "type": "module",
+  "license": "MIT OR Apache-2.0",
+  "exports": {
+    ".": "./src/index.js",
+    "./node": "./src/node/index.js",
+    "./measure": "./src/measure/bodyMeasure.js",
+    "./edit": "./src/edit/index.js",
+    "./edit/three": "./src/edit/three/live.js",
+    "./closet": "./src/closet/index.js",
+    "./import": "./src/import/index.js",
+    "./item": "./src/item/index.js",
+    "./fit": "./src/fit/index.js",
+    "./anim": "./src/anim/index.js",
+    "./character": "./src/character/index.js",
+    "./voice": "./src/voice/index.js",
+    "./persona": "./src/persona/index.js"
+  },
+  "bin": {
+    "vrmxa": "./bin/vrmxa.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "fixtures": "node scripts/make-fixtures.mjs",
+    "browser-check": "node scripts/browser-serve.mjs"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "4.1.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "fflate": "0.8.3",
+    "sql.js": "1.15.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "three": "0.187.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "three": "0.187.0"
+  }
+}

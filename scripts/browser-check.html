@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>vrmxa-core browser check</title>
+<script type="importmap">{ "imports": { "fflate": "/node_modules/fflate/esm/browser.js" } }</script>
+<script src="/node_modules/sql.js/dist/sql-wasm.js"></script>
+<style>body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; } pre { white-space: pre-wrap; } .pass { color: #1a7f37; } .fail { color: #cf222e; }</style>
+</head>
+<body>
+<h1>vrmxa-core in the browser</h1>
+<p id="status">running…</p>
+<pre id="log"></pre>
+<script type="module">
+// The core round trips, run once in a browser with the same modules Node runs (PRD REF-1).
+import * as V from '/src/index.js';
+
+V.setSqlJsLoader(() => window.initSqlJs({ locateFile: (f) => `/node_modules/sql.js/dist/${f}` }));
+const log = document.getElementById('log');
+const results = [];
+const get = async (p) => new Uint8Array(await (await fetch(p)).arrayBuffer());
+const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+async function check(name, fn) {
+  try {
+    const detail = await fn();
+    results.push({ name, ok: true, detail });
+    log.textContent += `PASS  ${name}${detail ? `  (${detail})` : ''}\n`;
+  } catch (e) {
+    results.push({ name, ok: false, detail: String(e?.message || e) });
+    log.textContent += `FAIL  ${name}: ${e?.message || e}\n`;
+  }
+}
+const assert = (c, m) => { if (!c) throw new Error(m); };
+
+await check('environment', () => `${navigator.userAgent.match(/(Chrome|Safari|Firefox)\/[\d.]+/)?.[0] || navigator.userAgent}; crypto.subtle ${!!crypto.subtle}`);
+for (const f of ['items/skinned-top.vrmxw', 'items/pinned-hat.vrmxw', 'items/state-sword.vrmxw', 'items/animated-staff.vrmxw']) {
+  await check(`item ${f}: read, write, same bytes`, async () => {
+    const b = await get(`/fixtures/${f}`);
+    const item = await V.readItem(b);
+    assert(same(await V.writeItem(item), b), 'bytes differ');
+    return `${b.length} bytes`;
+  });
+}
+for (const f of ['characters/minimal.vrmxa', 'characters/full.vrmxa']) {
+  await check(`character ${f}: read, write, same bytes`, async () => {
+    const b = await get(`/fixtures/${f}`);
+    const t0 = performance.now();
+    const bundle = await V.readBundle(b);
+    const out = await V.writeBundle(bundle);
+    assert(same(out, b), 'bytes differ');
+    return `${(b.length / 1048576).toFixed(1)} MB in ${Math.round(performance.now() - t0)} ms${bundle.database ? `; persona ${bundle.database.persona.name}` : ''}`;
+  });
+}
+await check('legacy/v4.vrmxa: brought forward and valid', async () => {
+  const bundle = await V.readBundle(await get('/fixtures/legacy/v4.vrmxa'));
+  const p = await V.checkBundle(await V.writeBundle(bundle));
+  assert(!p.some((x) => x.severity === 'error'), JSON.stringify(p));
+  return `from version ${bundle.upgradedFrom}`;
+});
+const expected = await (await fetch('/fixtures/hostile/expected.json')).json();
+for (const [f, want] of Object.entries(expected)) {
+  await check(`hostile/${f}: ${want.length ? want.join(', ') : 'passes'}`, async () => {
+    const b = await get(`/fixtures/hostile/${f}`);
+    const p = f.endsWith('.vrmxw') ? await V.checkItem(b) : await V.checkBundle(b);
+    const got = p.filter((x) => x.severity === 'error').map((x) => x.code);
+    if (!want.length) assert(!got.length, got.join(', '));
+    for (const c of want) assert(got.includes(c), `expected ${c}, got ${got.join(', ')}`);
+  });
+}
+await check('a new character with a database, written twice: same bytes', async () => {
+  const avatar = await get('/fixtures/hostile/control.vrmxa').then((z) => V.scanZip(z).entries.find((e) => e.name === 'avatar.vrm').data);
+  const make = async () => {
+    const b = V.createBundle({ avatar, id: '00000000-0000-4000-8000-000000000001', fileId: '00000000-0000-4000-8000-000000000002', created: '2026-11-16T00:00:00.000Z' });
+    b.manifest.avatar.header.id = '00000000-0000-4000-8000-000000000003';
+    await V.setDatabase(b, { persona: { name: 'Browser', updated: '2026-11-16T00:00:00.000Z' } });
+    return V.writeBundle(b);
+  };
+  const a = await make(), b = await make();
+  assert(same(a, b), 'not repeatable');
+  return `${a.length} bytes`;
+});
+await check('measuring spec.vrm reproduces spec.measurements.json', async () => {
+  const m = await V.measureVrm(await get('/spec/spec.vrm'), { file: 'spec.vrm' });
+  const ref = await (await fetch('/spec/spec.measurements.json')).json();
+  delete m.source; delete ref.source;
+  assert(JSON.stringify(m) === JSON.stringify(ref), 'differs');
+});
+const failed = results.filter((r) => !r.ok).length;
+document.getElementById('status').innerHTML = failed ? `<b class="fail">${failed} of ${results.length} failed</b>` : `<b class="pass">all ${results.length} passed</b>`;
+document.title = failed ? 'FAIL' : 'PASS';
+window.__results = results;
+</script>
+</body>
+</html>
