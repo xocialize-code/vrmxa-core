@@ -164,3 +164,20 @@ test('refreshBakedEyes writes each state\'s finished pictures by content and dro
   const problems = await checkBundle(await writeBundle(b));
   assert.deepEqual(problems.filter((p) => p.severity === 'error'), []);
 });
+
+test('live texture(): one material updated, the others left as textures() set them', { skip: noSpec }, () => {
+  const g = parseGlb(specVrm());
+  const vrm = liveScene(['Iris', 'White']);
+  const live = createLiveEdits(vrm, g);
+  const pic = (v) => ({ width: 1, height: 1, data: new Uint8ClampedArray([v, v, v, 255]) });
+  live.textures({ Iris: pic(10), White: pic(20) });
+  const white = vrm.byName.White.map;
+  live.texture('Iris', pic(99));
+  assert.equal(vrm.byName.Iris.map.image.data[0], 99);
+  assert.equal(vrm.byName.White.map, white, 'White untouched');
+  const tex = vrm.byName.Iris.map;
+  live.texture('Iris', pic(100));
+  assert.equal(vrm.byName.Iris.map, tex, 'the same texture, new pixels');
+  live.texture('Iris', null);
+  assert.equal(vrm.byName.Iris.map.image.data[0], 10, 'back to its own: here the original texture');
+});

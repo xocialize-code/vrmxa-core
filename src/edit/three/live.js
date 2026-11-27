@@ -549,6 +549,28 @@ export function createLiveEdits(vrm, data) {
       applyBlush(lastFace);
     },
     /**
+     * One material's finished texture, live, leaving every other as textures() set it: for a texture being painted, whose
+     * pixels change many times a second (PRD TEX-7). A picture of the same size updates the same texture. null puts back
+     * what textures() last gave it, or its own texture.
+     */
+    texture(name, picture) {
+      if (picture) layerPics.set(name, picture); else layerPics.delete(name);
+      if (FACE_SKIN.test(name || '')) { layerVersion++; applyBlush(lastFace); return; }
+      scene.traverse((o) => {
+        if (!o.isMesh) return;
+        for (const m of mats(o)) {
+          if (m.name !== name) continue;
+          if (!texState.has(m)) texState.set(m, { map: m.map || null, shade: m.shadeMultiplyTexture || null, visible: m.visible, tex: null });
+          const st = texState.get(m);
+          const sameShade = !!st.shade && sharesShade(m);
+          if (!picture || !st.map) { m.map = st.map; if (sameShade) m.shadeMultiplyTexture = st.shade; continue; }
+          st.tex = textureFrom(st.map, picture, st.tex);
+          m.map = st.tex;
+          if (sameShade) m.shadeMultiplyTexture = st.tex;
+        }
+      });
+    },
+    /**
      * The character's fine-tuning of worn items (VRMXA §7.5 `adjust`), live: { itemId: adjust }. The
      * meshes are found by the mark prepareItemModel leaves on them (extras.vrmxaFit), and moved by
      * the same formula the bake writes into avatar.vrm (closet/fit.js). An item left out goes back
