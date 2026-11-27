@@ -2,3 +2,4 @@
 // and the one flattener that writes every finished texture (PRD REF-10).
 export { flattenTarget, scaleAboutEyes, eyesOf, adjuster, toLab, fromLab, appliesTo, bandOf, inBands, BANDS } from './flatten.js';
 export { flattenEyes, flattenSkin, eyeTarget, pictureLoader, materialPicture, eyeStateTextures, layerTextures, refreshBakedEyes, SCALED_TARGETS } from './documents.js';
+export { starterEyes, eyesFromArt, creatorControls, applyCreator } from './creator.js';
