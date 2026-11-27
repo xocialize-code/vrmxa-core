@@ -11,7 +11,8 @@ import { decodePng } from '../src/edit/png.js';
 import { bakeAvatar, newEdits, setEdits, readEdits } from '../src/edit/index.js';
 import { drawAvatar } from '../src/closet/avatar.js';
 import { createLiveEdits } from '../src/edit/three/live.js';
-import { flattenEyes, flattenSkin, pictureLoader, materialPicture, eyeStateTextures, layerTextures } from '../src/layers/index.js';
+import { flattenEyes, flattenSkin, pictureLoader, materialPicture, eyeStateTextures, layerTextures, refreshBakedEyes } from '../src/layers/index.js';
+import { setDocument, writeBundle, checkBundle } from '../src/index.js';
 
 const skip = noSpecRepo || noSpec;
 const fullBundle = async () => readBundle(new Uint8Array(readFileSync(join(SPEC_REPO, 'fixtures/characters/full.vrmxa'))));
@@ -140,4 +141,26 @@ test('live: the blush is painted over a layered face skin, and the plain skin co
   live.textures({});
   live.apply(readEdits(newEdits()).edits);
   assert.equal(vrm.byName[face].map, orig, 'no layers and no blush: Spec\'s own texture');
+});
+
+test('refreshBakedEyes writes each state\'s finished pictures by content and drops the ones nothing uses', { skip: noSpecRepo }, async () => {
+  const b = await fullBundle();
+  const eyes = docOf(b, 'appearance/eyes/eyes.json');
+  const oldDefault = eyes.states[0].baked.iris;
+  const r1 = await refreshBakedEyes(b);
+  assert.equal(r1.changed, true, 'the fixture\'s baked pictures were drawn by hand, not flattened');
+  assert.deepEqual(Object.keys(r1.baked), ['default', 'zonedOut'], 'squint is made from default and keeps none');
+  const flat = flattenEyes(b.docs.eyes, pictureLoader(b.entries));
+  for (const s of ['default', 'zonedOut']) assert.ok(samePixels(decodePng(b.entries.get(b.docs.eyes.states.find((x) => x.name === s).baked.iris)), flat[s].iris), s);
+  assert.equal(b.entries.has(oldDefault), false, 'the old picture is gone');
+  assert.match(r1.baked.default.iris, /^appearance\/baked\/[0-9a-f]{12}\.png$/);
+  assert.equal((await refreshBakedEyes(b)).changed, false, 'the same layers, the same pictures');
+  const next = JSON.parse(JSON.stringify(b.docs.eyes));
+  next.states[0].layers[1].opacity = 0.2;
+  setDocument(b, 'eyes', next);
+  const r3 = await refreshBakedEyes(b);
+  assert.notEqual(r3.baked.default.iris, r1.baked.default.iris);
+  assert.equal(r3.baked.zonedOut.iris, r1.baked.zonedOut.iris, 'a state whose layers did not change keeps its picture');
+  const problems = await checkBundle(await writeBundle(b));
+  assert.deepEqual(problems.filter((p) => p.severity === 'error'), []);
 });

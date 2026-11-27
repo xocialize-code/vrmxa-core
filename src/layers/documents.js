@@ -1,5 +1,8 @@
 // Flattening a whole editor document (VRMXA §6.1 eyes, §6.3 skin) with the one flattener.
-import { decodePng } from '../edit/png.js';
+import { decodePng, encodePng } from '../edit/png.js';
+import { sha256, sha12 } from '../hash.js';
+import { bakedPath } from '../layout.js';
+import { setEntry, setDocument } from '../vrmxa.js';
 import { parseGlb } from '../glb.js';
 import { flattenTarget, scaleAboutEyes, inBands } from './flatten.js';
 
@@ -109,6 +112,40 @@ export function layerTextures({ eyes = null, skin = null } = {}, entries, spec =
     for (const [t, d] of Object.entries(skin.targets || {})) if (d.material && flat[t]) out[d.material] = flat[t];
   }
   return out;
+}
+
+/**
+ * Flatten every eye state again and write its finished textures into the bundle (VRMXA §6.1 `baked`, §6.0 the picture
+ * store): `appearance/baked/<sha12>.png`, named by content, each state's `baked` pointing at them. A state made `from`
+ * another keeps none of its own (it has no layers). A finished picture no document refers to any more is removed.
+ * → { changed: boolean, baked: { [state]: { [target]: path } } }
+ */
+export async function refreshBakedEyes(bundle) {
+  const eyes = bundle.docs?.eyes;
+  if (!eyes?.states?.length) return { changed: false, baked: {} };
+  const flat = flattenEyes(eyes, pictureLoader(bundle.entries));
+  const next = JSON.parse(JSON.stringify(eyes));
+  const old = new Set(eyes.states.flatMap((s) => Object.entries(s.baked || {}).filter(([k]) => k !== 'of').map(([, p]) => p)));
+  const out = {};
+  for (const s of next.states) {
+    if (s.from || !s.layers?.length) continue;
+    const baked = {};
+    for (const [t, pic] of Object.entries(flat[s.name] || {})) {
+      const png = encodePng(pic);
+      const path = bakedPath(sha12(await sha256(png)));
+      if (!bundle.entries.has(path)) setEntry(bundle, path, png);
+      baked[t] = path;
+    }
+    s.baked = baked;
+    out[s.name] = baked;
+  }
+  const changed = JSON.stringify(next) !== JSON.stringify(eyes);
+  if (changed) {
+    setDocument(bundle, 'eyes', next);
+    const used = JSON.stringify(['eyes', 'mouth', 'skin'].map((r) => bundle.docs[r] ?? null));
+    for (const p of old) if (!used.includes(JSON.stringify(p))) bundle.entries.delete(p);
+  }
+  return { changed, baked: out };
 }
 
 /**
