@@ -37,6 +37,9 @@
 //                                           whose each piece is and what it allows, the limits they set, what would be
 //                                           asked before wearing, and what a shared copy leaves out
 //   vrmxa credits  <file.vrmxa>             the makers to credit (PRD HON-4)
+//   vrmxa flatten  <file.vrmxa> [<folder>] [--state s,s]
+//                                           the one flattener: every eye state's and the skin's finished textures,
+//                                           with their hashes; written as PNGs when a folder is given
 //   vrmxa export   <file.vrmxa> --vrm <out.vrm> [--share] | --item <item> <out.vrmxw>
 //   vrmxa share    <file.vrmxa> <out.vrmxa> [--new-identity]
 //   vrmxa voice    <file.vrmxa> [list|check] | import <clip.wav> --name N --transcript T … <out.vrmxa> | preset --engine E --preset P … <out.vrmxa>
@@ -69,11 +72,13 @@ import * as anim from '../src/anim/index.js';
 import * as character from '../src/character/index.js';
 import * as voice from '../src/voice/index.js';
 import * as persona from '../src/persona/index.js';
+import * as layers from '../src/layers/index.js';
+import { encodePng } from '../src/edit/png.js';
 import { readFolder, writeFolder, readSpecVrm, findSpecRepo } from '../src/node/index.js';
 
 const argv = process.argv.slice(2);
 const VALUED = ['--dir', '--only', '--kit', '--spec', '--listing', '--doc', '--approve', '--skip', '--into', '--out', '--name', '--merge', '--type', '--tags', '--body', '--on', '--place', '--ops', '--lift', '--requires', '--priority', '--root', '--speed', '--licence', '--source', '--loops',
-  '--transcript', '--language', '--origin', '--speaker', '--consent-date', '--consent-scope', '--consent-record', '--vrm', '--item', '--items', '--style', '--card-version', '--app-fields', '--port', '--engine', '--preset', '--meta'];
+  '--transcript', '--language', '--origin', '--speaker', '--consent-date', '--consent-scope', '--consent-record', '--vrm', '--item', '--items', '--style', '--card-version', '--app-fields', '--port', '--engine', '--preset', '--meta', '--state'];
 const flags = new Set(argv.filter((a) => a.startsWith('--') && !VALUED.includes(a)));
 const opt = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : null; };
 const pos = argv.filter((a, i) => !a.startsWith('--') && !VALUED.includes(argv[i - 1]));
@@ -160,6 +165,8 @@ const USAGE = `usage: vrmxa <command> [options]
                                      whose each item, clip and voice is and what it allows; the limits; the questions a
                                      person is asked before wearing (all items, or --items'); what a shared copy leaves out
   credits  <file.vrmxa>              the makers of every piece that asks for credit
+  flatten  <file.vrmxa> [<folder>] [--state <s,s>]
+                                     the finished textures of the eye states and the skin, by the one flattener
   export   <file.vrmxa> --vrm <out.vrm> [--share]
                                      a plain VRM 1.0, the same model as avatar.vrm; --share leaves out what may not be passed on
   export   <file.vrmxa> --item <item> <out.vrmxw>
@@ -996,6 +1003,33 @@ async function creditsCmd(file) {
   out({ ok: true, path: file, ...c }, `${file}: credit goes to [names are the file's content]\n${c.lines.map((l) => `  ${l}`).join('\n') || '  nobody: no piece asks for credit'}`);
 }
 
+// ---- the one flattener (PRD MCP-10, REF-10) ------------------------------------------------------------
+async function flattenCmd(file, folder) {
+  const bundle = await openBundle(file);
+  const doc = (k) => { const p = documentPaths(bundle)[k] ?? `appearance/${k}/${k}.json`; const b = bundle.entries.get(p); return b ? JSON.parse(new TextDecoder().decode(b)) : null; };
+  const eyes = doc('eyes'), skin = doc('skin');
+  if (!eyes && !skin) fail(1, `${file}: no layered eyes or skin to flatten`);
+  const load = layers.pictureLoader(bundle.entries);
+  const only = opt('--state') ? opt('--state').split(',') : undefined;
+  const made = [];
+  if (eyes) for (const [state, ts] of Object.entries(layers.flattenEyes(eyes, load, { states: only }))) for (const [t, p] of Object.entries(ts)) made.push({ path: `eyes/${state}-${t}.png`, pic: p });
+  let skinBase = 'none';
+  if (skin && !only) {
+    const spec = specBytes();
+    const bases = {};
+    if (spec) { for (const [t, d] of Object.entries(skin.targets || {})) bases[t] = layers.materialPicture(spec, d.material); skinBase = "the base's own skin"; }
+    for (const [t, p] of Object.entries(layers.flattenSkin(skin, load, bases))) made.push({ path: `skin/${t}.png`, pic: p });
+  }
+  const list = [];
+  for (const m of made) {
+    const png = encodePng(m.pic);
+    if (folder) { const to = join(folder, m.path); mkdirSync(dirname(to), { recursive: true }); writeFileSync(to, png); }
+    list.push({ path: m.path, size: [m.pic.width, m.pic.height], pixels: await sha256(m.pic.data), png: await sha256(png) });
+  }
+  out({ ok: true, path: file, folder: folder || null, skinBase, textures: list },
+    `${file}: ${list.length} finished texture${list.length === 1 ? '' : 's'}${folder ? `, written to ${folder}` : ''}${skin && !only ? ` (skin over ${skinBase})` : ''}\n${list.map((t) => `  ${t.path.padEnd(28)} ${t.size.join('×').padEnd(10)} ${t.pixels.slice(0, 12)}`).join('\n')}`);
+}
+
 async function exportCmd(file, outArg) {
   const bundle = await openBundle(file);
   try {
@@ -1227,7 +1261,7 @@ async function mcpCmd(file) {
 }
 
 const commands = { mcp: mcpCmd, inspect, validate, pack, unpack, upgrade, measure, edits, 'apply-edits': applyEditsCmd, bake, closet, import: importCmd, fit: fitCmd, clip: clipCmd, motion,
-  details, licence, credits: creditsCmd, export: exportCmd, share, voice: voiceCmd, persona: personaCmd, fixtures: fixturesCmd, conformance: conformanceCmd };
+  details, licence, credits: creditsCmd, flatten: flattenCmd, export: exportCmd, share, voice: voiceCmd, persona: personaCmd, fixtures: fixturesCmd, conformance: conformanceCmd };
 if (!cmd || flags.has('--help') || !commands[cmd]) {
   process.stdout.write(`${USAGE}\n`);
   process.exit(cmd && !flags.has('--help') ? 2 : 0);

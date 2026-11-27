@@ -11,6 +11,7 @@
     "./measure": "./src/measure/bodyMeasure.js",
     "./edit": "./src/edit/index.js",
     "./edit/three": "./src/edit/three/live.js",
+    "./layers": "./src/layers/index.js",
     "./closet": "./src/closet/index.js",
     "./import": "./src/import/index.js",
     "./item": "./src/item/index.js",
