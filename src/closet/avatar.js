@@ -8,6 +8,7 @@ import { buildGlb, parseGlb } from '../glb.js';
 import { clone } from '../bytes.js';
 import { setAvatar } from '../vrmxa.js';
 import { bakeAvatar } from '../edit/bake.js';
+import { layerTextures } from '../layers/documents.js';
 import { mergeItemModel } from '../edit/merge.js';
 import { closetOf, itemOf } from './ops.js';
 import { prepareItemModel, methodFor } from './fit.js';
@@ -105,6 +106,8 @@ export async function drawAvatar(bundle, { spec, meta, fitCache, fitWeights = tr
     items: w.items.map((x) => x.prepared),
     lift: w.lift,
     pieces: w.pieces,
+    // the layered editors' default textures: the default eye set and the skin (VRMXA §6.0, rule 8 of §2)
+    textures: layerTextures({ eyes: bundle.docs.eyes || null, skin: bundle.docs.skin || null }, bundle.entries, spec),
     // the character's own details, carried whole into every avatar.vrm (LIC-4); `meta` sets fields over them
     meta: characterMeta(bundle, meta),
     metaMode: 'replace',

@@ -74,6 +74,44 @@ export function flattenEyes(doc, load, { states: only } = {}) {
 }
 
 /**
+ * What showing an eye state puts on the model (VRMXA §6.1, "Showing a state"): its finished textures by
+ * material name, a target the state leaves out taking `default`'s; the materials of the targets it hides;
+ * and the face shapes it holds. `flat` is flattenEyes' result, or the state's `baked` pictures in its shape.
+ * → { pictures: { [material]: picture }, hide: [material], morphs: { [shape]: weight } }
+ */
+export function eyeStateTextures(doc, flat, stateName = 'default') {
+  const state = (doc.states || []).find((s) => s.name === stateName);
+  if (!state) throw new Error(`no eye state ${stateName}`);
+  const pictures = {};
+  for (const [t, d] of Object.entries(doc.targets || {})) {
+    const p = flat[stateName]?.[t] ?? (stateName !== 'default' ? flat.default?.[t] : null);
+    if (p && d.material) pictures[d.material] = p;
+  }
+  const hide = (state.hide || []).map((t) => doc.targets?.[t]?.material).filter(Boolean);
+  return { pictures, hide, morphs: { ...(state.morphs || {}) } };
+}
+
+/**
+ * The finished textures a character's layered editors put into avatar.vrm (VRMXA §6.0, "Writing into
+ * avatar.vrm"): the default eye set and the skin, by material name. `docs` holds the eyes and skin documents,
+ * `entries` the bundle's files, `spec` the base's VRM (for the skin's own art under its layers).
+ * → { [material]: picture }
+ */
+export function layerTextures({ eyes = null, skin = null } = {}, entries, spec = null) {
+  const out = {};
+  if (!eyes && !skin) return out;
+  const load = pictureLoader(entries);
+  if (eyes?.states?.length) Object.assign(out, eyeStateTextures(eyes, flattenEyes(eyes, load, { states: ['default'] }), 'default').pictures);
+  if (skin?.layers?.length) {
+    const bases = {};
+    if (spec) for (const [t, d] of Object.entries(skin.targets || {})) bases[t] = d.material ? materialPicture(spec, d.material) : null;
+    const flat = flattenSkin(skin, load, bases);
+    for (const [t, d] of Object.entries(skin.targets || {})) if (d.material && flat[t]) out[d.material] = flat[t];
+  }
+  return out;
+}
+
+/**
  * Flatten a skin document (§6.3) over each skin texture's own art.
  *   bases: { skinFace: picture, skinBody: picture }, the base's textures, which are band 1
  *   extra: { [target]: [layers] } more layers for a target, such as a shown mouth state's lips layers

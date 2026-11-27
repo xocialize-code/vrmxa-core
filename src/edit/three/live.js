@@ -320,10 +320,24 @@ export function createLiveEdits(vrm, data) {
 
   // ---- the blush (EDITS.md §3.7) ----------------------------------------------------------------
   const blushState = new WeakMap(); // material -> { map, shade, pixels, tex }
+  // does a material's MToon shade multiply use the same picture as its base colour in the file? three-vrm loads the
+  // two as separate textures (separate images), so it can't be told from the objects (VRMXA §6.0 "Writing into avatar.vrm")
+  const fileMat = new Map((json.materials || []).map((m) => [m.name, m]));
+  const sharesShade = (m) => {
+    if (m.shadeMultiplyTexture && m.shadeMultiplyTexture === m.map) return true;
+    const f = fileMat.get(m.name) || fileMat.get((m.name || '').replace(/ \((Outline|left eye)\)$/, ''));
+    const b = f?.pbrMetallicRoughness?.baseColorTexture?.index, sh = f?.extensions?.VRMC_materials_mtoon?.shadeMultiplyTexture?.index;
+    return b != null && sh != null && (b === sh || json.textures?.[b]?.source === json.textures?.[sh]?.source);
+  };
+  const texState = new WeakMap(); // material -> { map, shade, visible, tex }, for textures()
+  // finished textures from the layered editors, by material name (textures() below); the face skin's is the blush's base
+  const layerPics = new Map();
+  let layerVersion = 0, lastFace = null;
   function applyBlush(face) {
+    lastFace = face;
     const on = !!lm && blushOn(face);
-    const strength = face.shapes.blush ?? SHAPES.blush.def;
-    const key = on ? JSON.stringify([face.colors.cheek, strength]) : '';
+    const strength = face?.shapes?.blush ?? SHAPES.blush.def;
+    const key = `${layerVersion}|${on ? JSON.stringify([face.colors.cheek, strength]) : ''}`;
     if (keys.blush === key) return;
     keys.blush = key;
     scene.traverse((o) => {
@@ -332,12 +346,14 @@ export function createLiveEdits(vrm, data) {
         if (!FACE_SKIN.test(m.name || '')) continue;
         if (!blushState.has(m)) blushState.set(m, { map: m.map || null, shade: m.shadeMultiplyTexture || null, pixels: undefined, tex: null });
         const st = blushState.get(m);
-        const sameShade = st.shade && st.shade === st.map;
-        if (!on || !st.map?.image) { m.map = st.map; if (sameShade) m.shadeMultiplyTexture = st.map; continue; }
-        if (st.pixels === undefined) st.pixels = pixelsOf(st.map.image);
-        if (!st.pixels) continue;
-        const img = { width: st.pixels.width, height: st.pixels.height, data: new Uint8ClampedArray(st.pixels.data) };
-        paintBlush(img, lm.cheekUV, face.colors.cheek, strength);
+        const sameShade = !!st.shade && sharesShade(m);
+        const over = layerPics.get(m.name) || null;
+        if ((!on && !over) || !st.map) { m.map = st.map; if (sameShade) m.shadeMultiplyTexture = st.shade; continue; }
+        if (!over && st.pixels === undefined) st.pixels = st.map.image ? pixelsOf(st.map.image) : null;
+        const basePixels = over || st.pixels;
+        if (!basePixels) continue;
+        const img = { width: basePixels.width, height: basePixels.height, data: new Uint8ClampedArray(basePixels.data) };
+        if (on) paintBlush(img, lm.cheekUV, face.colors.cheek, strength);
         st.tex = textureFrom(st.map, img, st.tex);
         m.map = st.tex;
         if (sameShade) m.shadeMultiplyTexture = st.tex;
@@ -503,6 +519,35 @@ export function createLiveEdits(vrm, data) {
       applyHairColour(face);
     },
     step,
+    /**
+     * Finished textures from the layered editors, live (VRMXA §6.0, §6.1 "Showing a state"): { [material name]:
+     * { width, height, data } } replaces each material's base colour picture, and its MToon shade multiply where it
+     * used the same one; `hide` lists materials not drawn (an eye state's hidden targets). A material left out goes
+     * back to its own texture. The face skin's picture is the base the blush is painted on. Calling it again with
+     * changed pixels updates the same textures, so a painted stroke can be shown as it is drawn.
+     */
+    textures(pictures = {}, { hide = [] } = {}) {
+      layerPics.clear();
+      for (const [k, v] of Object.entries(pictures || {})) if (v) layerPics.set(k, v);
+      layerVersion++;
+      const hidden = new Set(hide);
+      scene.traverse((o) => {
+        if (!o.isMesh) return;
+        for (const m of mats(o)) {
+          if (!texState.has(m)) texState.set(m, { map: m.map || null, shade: m.shadeMultiplyTexture || null, visible: m.visible, tex: null });
+          const st = texState.get(m);
+          m.visible = hidden.has(m.name) ? false : st.visible;
+          if (FACE_SKIN.test(m.name || '')) continue; // drawn with the blush, below
+          const sameShade = !!st.shade && sharesShade(m);
+          const pic = layerPics.get(m.name);
+          if (!pic || !st.map) { m.map = st.map; if (sameShade) m.shadeMultiplyTexture = st.shade; continue; }
+          st.tex = textureFrom(st.map, pic, st.tex);
+          m.map = st.tex;
+          if (sameShade) m.shadeMultiplyTexture = st.tex;
+        }
+      });
+      applyBlush(lastFace);
+    },
     /**
      * The character's fine-tuning of worn items (VRMXA §7.5 `adjust`), live: { itemId: adjust }. The
      * meshes are found by the mark prepareItemModel leaves on them (extras.vrmxaFit), and moved by

@@ -130,6 +130,25 @@ export function bakeHairDesign(json, bin, design, frame = headFrame(json, bin)) 
   return { bin: state.bin, materials };
 }
 
+// finished textures from the layered editors, by material name (VRMXA §6.0, "Writing into avatar.vrm"): a new image
+// for each, never painting over an image other materials share; materials of the same name share the new one
+function replaceTextures(json, state, textures) {
+  const made = new Map(); // material name -> texture index
+  (json.materials || []).forEach((mat) => {
+    const name = textures[mat.name] ? mat.name : (mat.name || '').replace(/ \(left eye\)$/, ''); // the iris split by side keeps its art
+    const pic = textures[name];
+    if (!pic) return;
+    const base = mat.pbrMetallicRoughness?.baseColorTexture;
+    if (!base) return;
+    const old = base.index;
+    if (!made.has(name)) made.set(name, addTexture(json, state, encodePng(pic), old, `${name} (layers)`));
+    base.index = made.get(name);
+    const shade = mat.extensions?.VRMC_materials_mtoon?.shadeMultiplyTexture;
+    const sameImage = (t) => t != null && json.textures?.[t]?.source === json.textures?.[old]?.source;
+    if (shade && (shade.index === old || sameImage(shade.index))) shade.index = made.get(name);
+  });
+}
+
 const isWhite = (c) => !c || c.every((v) => Math.abs(v - 1) < 1e-3);
 const isBlack = (c) => !c || c.every((v) => v < 1e-3);
 
@@ -160,11 +179,15 @@ function repaint(json, state, matIndex, paint, cache) {
  * opts.lift: how far worn shoes raise the figure, in metres (VRMXW §7.1).
  * opts.pieces: the licence records of the hair piece and worn items, written to the glTF's extras.vrmxaPieces.
  * opts.bodyOnly: skip the hair, the items and the textures (for measuring the edited body, FITTING.md §4).
+ * opts.textures: finished textures by material name ({ [name]: { width, height, data } }), from the layered editors
+ *   (layers/documents.js layerTextures: the default eye set and the skin, VRMXA §6.0). Each replaces the image its
+ *   material's base colour uses, and the MToon shade multiply follows where it used the same image. The blush is
+ *   painted over them.
  * opts.fit(json, bin, { body, bones, lift }) → { bin, report }: called once the items are merged and before the
  *   body is written in, so Spec-fit (fit/index.js fitMerged) can give the Spec-fitted items their place on this
  *   body in Spec's bind space; the body bake then carries them there. Its report is returned as `fit`.
  */
-export function bakeAvatar(specBytes, doc, { hair = null, items = [], lift = 0, pieces = null, meta = null, metaMode = 'merge', bodyOnly = false, fit = null } = {}) {
+export function bakeAvatar(specBytes, doc, { hair = null, items = [], lift = 0, pieces = null, meta = null, metaMode = 'merge', bodyOnly = false, fit = null, textures = null } = {}) {
   const parsed = parseGlb(specBytes);
   const json = JSON.parse(JSON.stringify(parsed.json));
   const state = { bin: parsed.bin.slice() };
@@ -211,6 +234,7 @@ export function bakeAvatar(specBytes, doc, { hair = null, items = [], lift = 0, 
     state.bin = bakeBody(json, state.bin, { body: edits.body, bones: face.bones, lift: raise }, (b, bytes) => appendView(json, b, bytes));
   }
   if (!bodyOnly) {
+    if (textures) replaceTextures(json, state, textures);
     const cache = new Map();
     if (lm && blushOn(face)) {
       const strength = face.shapes.blush ?? SHAPES.blush.def;
