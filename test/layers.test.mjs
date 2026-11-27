@@ -98,7 +98,8 @@ test('a state made from itself is refused', () => {
 // is a change to every finished texture, so it needs a decision, not a new hash.
 const KNOWN = {
   'default/iris': '73e9ac62f9a616507933c8061be9dd41c8e3e20e1f26c1e0afc0689064a38c15',
-  'zonedOut/iris': '7883a254867516bae1447a5ab57515ee7364ee4f25b67a7f3448cbbb4b20d624',
+  'confused/iris': '7883a254867516bae1447a5ab57515ee7364ee4f25b67a7f3448cbbb4b20d624',
+  'smitten/iris': '9e9072b85622bff7d3b4b6f8271d55826b242020acabc7ece28ea636e27e0e3a', // a finished texture alone (D39)
   'squint/iris': 'eb8b214d1de18dd4886c473cf153eedd1dc2bd6aac9e3aae30906619b6500a9d',
   'skin/skinFace': 'bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8',
   'skin/skinBody': 'c5c0218e76207f7d56bf16202e578fbf63797b09c762cbbede320904a4c450d7',
@@ -126,10 +127,13 @@ test('changing the shared fill recolours every state that uses it, and only thos
   const before = flattenEyes(eyes, load);
   const amber = { ...eyes, fills: { eyeColour: { type: 'linear', stops: [{ at: 0, color: [0.5, 0.3, 0.05] }, { at: 1, color: [0.95, 0.75, 0.3] }] } } };
   const after = flattenEyes(amber, load);
-  for (const s of ['default', 'zonedOut', 'squint']) assert.notEqual(await sha256(after[s].iris.data), await sha256(before[s].iris.data), s);
-  // the zoned-out ring is black in both: pick a ring pixel, the left eye's top edge
+  for (const s of ['default', 'confused', 'squint']) assert.notEqual(await sha256(after[s].iris.data), await sha256(before[s].iris.data), s);
+  // the confused ring is black in both: pick a ring pixel, the left eye's top edge
   const ring = (p) => px(p, 766, 260 - 120);
-  assert.deepEqual(ring(after.zonedOut.iris), ring(before.zonedOut.iris));
+  assert.deepEqual(ring(after.confused.iris), ring(before.confused.iris));
+  // a state given as a finished texture alone doesn't follow the fill (D39)
+  assert.deepEqual([...after.smitten.iris.data.slice(0, 64)], [...before.smitten.iris.data.slice(0, 64)]);
+  assert.equal(await sha256(after.smitten.iris.data), await sha256(before.smitten.iris.data));
 });
 
 test('vrmxa flatten gives the same bytes from the command line', { skip: noSpecRepo }, async () => {

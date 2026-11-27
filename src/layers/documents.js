@@ -46,11 +46,38 @@ export function eyeTarget(doc, name) {
   return { size: t.size || doc.size, eyes: t.eyes || doc.eyes };
 }
 
+/** The kinds of look an eye state may be (VRMXA §6.1, D39), besides `x-<vendor>.<name>`. */
+export const EYE_STATE_KINDS = ['standard', 'confused', 'angry', 'surprised', 'love', 'admiration'];
+
+/**
+ * An eye state's kind (D39): its `kind`; `standard` for `default`; `confused` for a `zonedOut` that names none (its
+ * name before D39); else null.
+ */
+export function stateKind(state) {
+  if (!state) return null;
+  if (typeof state.kind === 'string' && state.kind) return state.kind;
+  if (state.name === 'default') return 'standard';
+  if (state.name === 'zonedOut') return 'confused';
+  return null;
+}
+
+/** The state an app asks for, by name or by kind (`{ name }` or `{ kind }`): the first that matches, or null. */
+export function findEyeState(doc, { name, kind } = {}) {
+  const states = doc?.states || [];
+  if (name != null) return states.find((s) => s.name === name) || null;
+  if (kind != null) return states.find((s) => stateKind(s) === kind) || null;
+  return null;
+}
+
+/** The targets a state's layers paint. */
+const paintedTargets = (s) => new Set((s.layers || []).flatMap((l) => [l.target, ...(l.targets || []), ...Object.keys(l.images || {})]).filter(Boolean));
+
 /**
  * Flatten the states of an eyes document.
- * → { [state]: { [target]: picture } }, holding only the targets the state's layers touch, or, for a state
- *   made `from` another, the scaled iris and highlight. A target a state leaves out is as in `default`
- *   (§6.1 `baked`); `hide` is the app's to apply when it shows the state.
+ * → { [state]: { [target]: picture } }: the targets the state's layers paint, flattened; the targets it gives as
+ *   finished textures alone (`baked`, a state made in any app, D39), as given; or, for a state made `from` another,
+ *   the scaled iris and highlight. A target a state leaves out is as in `default` (§6.1 `baked`); `hide` is the
+ *   app's to apply when it shows the state.
  */
 export function flattenEyes(doc, load, { states: only } = {}) {
   const byName = new Map((doc.states || []).map((s) => [s.name, s]));
@@ -66,8 +93,10 @@ export function flattenEyes(doc, load, { states: only } = {}) {
       const from = flattenState(src, seen);
       for (const t of SCALED_TARGETS) if (from[t]) out[t] = scaleAboutEyes(from[t], eyeTarget(doc, t).eyes, s.scale ?? 1);
     } else {
-      const names = [...new Set((s.layers || []).flatMap((l) => [l.target, ...(l.targets || []), ...Object.keys(l.images || {})]).filter(Boolean))];
-      for (const t of names) out[t] = flattenTarget(eyeTarget(doc, t), s.layers, { name: t, fills: doc.fills, load });
+      const painted = paintedTargets(s);
+      for (const t of painted) out[t] = flattenTarget(eyeTarget(doc, t), s.layers, { name: t, fills: doc.fills, load });
+      // finished textures given as they are, for the targets no layer paints (D39)
+      for (const [t, path] of Object.entries(s.baked || {})) if (t !== 'of' && !painted.has(t) && typeof path === 'string') out[t] = load(path);
     }
     done.set(s.name, out);
     return out;
@@ -129,8 +158,12 @@ export async function refreshBakedEyes(bundle) {
   const out = {};
   for (const s of next.states) {
     if (s.from || !s.layers?.length) continue;
-    const baked = {};
-    for (const [t, pic] of Object.entries(flat[s.name] || {})) {
+    // a target no layer paints keeps the finished texture it was given (D39)
+    const painted = paintedTargets(s);
+    const baked = Object.fromEntries(Object.entries(s.baked || {}).filter(([t]) => t !== 'of' && !painted.has(t)));
+    for (const t of painted) {
+      const pic = flat[s.name]?.[t];
+      if (!pic) continue;
       const png = encodePng(pic);
       const path = bakedPath(sha12(await sha256(png)));
       if (!bundle.entries.has(path)) setEntry(bundle, path, png);

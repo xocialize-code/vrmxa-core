@@ -117,7 +117,7 @@ export async function starterEyes(baseGlb, { name = 'Starter' } = {}) {
     fills: { eyeColour: colour },
     states: [
       { name: 'default', layers: [...sclera, fill, { id: 'shading', name: 'Shading', target: 'iris', kind: 'image', image: shadePath, blend: 'multiply', role: 'overlay' }, ...highlight] },
-      { name: 'confused', layers: [fill, { id: 'ring', name: 'Outer ring', target: 'iris', kind: 'image', image: ringPath }], hide: ['highlight'] },
+      { name: 'confused', kind: 'confused', layers: [fill, { id: 'ring', name: 'Outer ring', target: 'iris', kind: 'image', image: ringPath }], hide: ['highlight'] },
       { name: 'squint', from: 'default', scale: 0.78 },
     ],
   };

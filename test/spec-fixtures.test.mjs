@@ -63,6 +63,6 @@ test('the full character has every section, its avatar drawn with what it wears'
   assert.ok(b.docs.animations.clips.some((c) => c.derivedFrom && c.edit && c.groundedFor?.lift === 0.02));
   assert.ok(b.docs.voices.voices.some((v) => v.madeWith?.length) && b.docs.voices.voices.some((v) => v.realPerson && v.consent?.given));
   assert.equal(b.docs.closet.items.length, 8);
-  assert.deepEqual(b.docs.eyes.states.map((s) => s.name), ['default', 'zonedOut', 'squint']);
+  assert.deepEqual(b.docs.eyes.states.map((s) => s.name), ['default', 'confused', 'squint', 'smitten']);
   assert.ok(b.docs.mouth.states.some((s) => s.offsets) && b.docs.mouth.states.some((s) => s.morphs));
 });

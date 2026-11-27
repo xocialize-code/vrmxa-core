@@ -202,8 +202,14 @@ const editsSha = await sha256(full.entries.get('appearance/edits.json'));
   const ringPng = png(W, H, (x, y) => (ring(x, y) ? [0, 0, 0, 255] : [0, 0, 0, 0]));
   const iris = png(W, H, (x, y) => (inEye(x, y) ? [Math.round(28 + 92 * (y / H)), Math.round(61 + 153 * (y / H)), Math.round(110 + 94 * (y / H)), 255] : [0, 0, 0, 0]));
   const zoned = png(W, H, (x, y) => (ring(x, y) ? [0, 0, 0, 255] : inEye(x, y) ? [60, 130, 160, 255] : [0, 0, 0, 0]));
+  // a state given as a finished texture alone, as if painted in another app (D39): a pink heart in each eye
+  const inHeart = (x, y) => [[766, 260], [258, 260]].some(([cx, cy]) => {
+    const u = (x - cx) / 90, v = -(y - cy) / 90 + 0.25;
+    return (u * u + v * v - 1) ** 3 - u * u * v * v * v < 0;
+  });
+  const heart = png(W, H, (x, y) => (inHeart(x, y) ? [235, 70, 120, 255] : inEye(x, y) ? [60, 20, 40, 255] : [0, 0, 0, 0]));
   const paths = {};
-  for (const [k, b, dir] of [['mask', mask, 'layers'], ['shade', shade, 'layers'], ['ring', ringPng, 'layers'], ['iris', iris, 'baked'], ['zoned', zoned, 'baked']]) {
+  for (const [k, b, dir] of [['mask', mask, 'layers'], ['shade', shade, 'layers'], ['ring', ringPng, 'layers'], ['iris', iris, 'baked'], ['zoned', zoned, 'baked'], ['heart', heart, 'baked']]) {
     paths[k] = `appearance/${dir}/${await p12(b)}.png`; // the shared picture store (VRMXA §3.3, §6.0, D37)
     setEntry(full, paths[k], b);
   }
@@ -220,11 +226,12 @@ const editsSha = await sha256(full.entries.get('appearance/edits.json'));
         { id: 'l1', name: 'Eye colour', target: 'iris', kind: 'fill', eye: 'both', fill: 'eyeColour', mask: paths.mask },
         { id: 'l2', name: 'Shading', target: 'iris', kind: 'image', image: paths.shade, blend: 'multiply', opacity: 0.9 },
       ], baked: { iris: paths.iris } },
-      { name: 'zonedOut', layers: [
+      { name: 'confused', kind: 'confused', layers: [
         { id: 'l1', name: 'Eye colour', target: 'iris', kind: 'fill', eye: 'both', fill: 'eyeColour', mask: paths.mask },
         { id: 'l2', name: 'Outer ring', target: 'iris', kind: 'image', image: paths.ring },
       ], baked: { iris: paths.zoned }, hide: ['highlight'] },
       { name: 'squint', from: 'default', scale: 0.78 },
+      { name: 'smitten', kind: 'love', baked: { iris: paths.heart }, hide: ['highlight'] },
     ],
   });
 }
@@ -631,7 +638,7 @@ const expectedOf = async (rel, bytes) => {
 };
 const VALID = {
   'characters/minimal.vrmxa': { what: 'the least a bundle holds: manifest, avatar.vrm (Spec, named "Minimal"), thumbnail. No sections, no database', covers: 'VRMXA §3.3, §4, §5.2, D2, D30' },
-  'characters/full.vrmxa': { what: '"Mira", every section: the edit document (face, body, drawn hair), measurements of the edited body, eye states over the six eye targets (fill, mask, image layers; zonedOut hiding the highlight; squint made from default), skin layers (a tone on both skin textures, a mark on the body); avatar.vrm carries the default eye set and the layered skin, flattened (§6.0), mouth states (offsets with layers and a baked lip patch recording the skin it was flattened over; shapes), pictures in appearance/layers/ and appearance/baked/, a closet of eight items with a Spec-fitted top and trousers, boots with lift, a sword stowed, a hair piece, fine-tuning, two outfits, a staff that brought its set and clip, a restricted hat as a spare; animations with a corrected clip, its edit document and groundedFor; a designed voice with madeWith and a real-person stand-in with recorded consent; persona, examples, origin and a setting in character.sqlite; details and permissions in avatar.vrm, with every worn piece\'s licence in extras.vrmxaPieces', covers: 'VRMXA §3–§12, D37; CLOSET.md C1–C8; EDITS v7; FITTING §4.5' },
+  'characters/full.vrmxa': { what: '"Mira", every section: the edit document (face, body, drawn hair), measurements of the edited body, eye states over the six eye targets (fill, mask, image layers; confused hiding the highlight; squint made from default; smitten, of kind love, given as a finished texture alone), skin layers (a tone on both skin textures, a mark on the body); avatar.vrm carries the default eye set and the layered skin, flattened (§6.0), mouth states (offsets with layers and a baked lip patch recording the skin it was flattened over; shapes), pictures in appearance/layers/ and appearance/baked/, a closet of eight items with a Spec-fitted top and trousers, boots with lift, a sword stowed, a hair piece, fine-tuning, two outfits, a staff that brought its set and clip, a restricted hat as a spare; animations with a corrected clip, its edit document and groundedFor; a designed voice with madeWith and a real-person stand-in with recorded consent; persona, examples, origin and a setting in character.sqlite; details and permissions in avatar.vrm, with every worn piece\'s licence in extras.vrmxaPieces', covers: 'VRMXA §3–§12, D37; CLOSET.md C1–C8; EDITS v7; FITTING §4.5' },
   'items/worn-skinned.vrmxw': { what: 'a worn, skinned top: MToon with a texture, a ribbon on three bones of its own with a spring and a collider, a thumbnail, a listing', covers: 'VRMXW §5.3, §5.5, §11' },
   'items/pinned.vrmxw': { what: 'a hat pinned to the head', covers: 'VRMXW §5.4, §8' },
   'items/states-pinned.vrmxw': { what: 'a sword with two states: held in the right hand, stowed on the upper chest with a matrix; state tags', covers: 'VRMXW §8' },

@@ -2550,6 +2550,26 @@ export default {
      "name": {
       "$ref": "defs.schema.json#/$defs/nonEmptyText"
      },
+     "kind": {
+      "anyOf": [
+       {
+        "enum": [
+         "standard",
+         "confused",
+         "angry",
+         "surprised",
+         "love",
+         "admiration"
+        ]
+       },
+       {
+        "type": "string",
+        "pattern": "^x-[a-z0-9-]+\\.[A-Za-z0-9._-]+$"
+       }
+      ],
+      "x-section": "VRMXA §6.1, D39",
+      "x-rule": "an eye state's kind is standard, confused, angry, surprised, love, admiration or x-<vendor>.<name>"
+     },
      "layers": {
       "type": "array",
       "items": {

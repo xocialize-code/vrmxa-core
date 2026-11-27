@@ -11,7 +11,7 @@ import { decodePng } from '../src/edit/png.js';
 import { bakeAvatar, newEdits, setEdits, readEdits } from '../src/edit/index.js';
 import { drawAvatar } from '../src/closet/avatar.js';
 import { createLiveEdits } from '../src/edit/three/live.js';
-import { flattenEyes, flattenSkin, pictureLoader, materialPicture, eyeStateTextures, layerTextures, refreshBakedEyes } from '../src/layers/index.js';
+import { flattenEyes, flattenSkin, pictureLoader, materialPicture, eyeStateTextures, layerTextures, refreshBakedEyes, stateKind, findEyeState } from '../src/layers/index.js';
 import { setDocument, writeBundle, checkBundle } from '../src/index.js';
 
 const skip = noSpecRepo || noSpec;
@@ -32,9 +32,9 @@ test('eyeStateTextures: a state\'s own textures, default\'s for the rest, its hi
   const eyes = docOf(b, 'appearance/eyes/eyes.json');
   const flat = flattenEyes(eyes, pictureLoader(b.entries));
   const iris = eyes.targets.iris.material, hl = eyes.targets.highlight.material;
-  const z = eyeStateTextures(eyes, flat, 'zonedOut');
+  const z = eyeStateTextures(eyes, flat, 'confused');
   assert.deepEqual(Object.keys(z.pictures), [iris]);
-  assert.ok(samePixels(z.pictures[iris], flat.zonedOut.iris));
+  assert.ok(samePixels(z.pictures[iris], flat.confused.iris));
   assert.deepEqual(z.hide, [hl]);
   const sq = eyeStateTextures(eyes, flat, 'squint');
   assert.ok(samePixels(sq.pictures[iris], flat.squint.iris));
@@ -149,9 +149,9 @@ test('refreshBakedEyes writes each state\'s finished pictures by content and dro
   const oldDefault = eyes.states[0].baked.iris;
   const r1 = await refreshBakedEyes(b);
   assert.equal(r1.changed, true, 'the fixture\'s baked pictures were drawn by hand, not flattened');
-  assert.deepEqual(Object.keys(r1.baked), ['default', 'zonedOut'], 'squint is made from default and keeps none');
+  assert.deepEqual(Object.keys(r1.baked), ['default', 'confused'], 'squint is made from default; smitten has no layers');
   const flat = flattenEyes(b.docs.eyes, pictureLoader(b.entries));
-  for (const s of ['default', 'zonedOut']) assert.ok(samePixels(decodePng(b.entries.get(b.docs.eyes.states.find((x) => x.name === s).baked.iris)), flat[s].iris), s);
+  for (const s of ['default', 'confused']) assert.ok(samePixels(decodePng(b.entries.get(b.docs.eyes.states.find((x) => x.name === s).baked.iris)), flat[s].iris), s);
   assert.equal(b.entries.has(oldDefault), false, 'the old picture is gone');
   assert.match(r1.baked.default.iris, /^appearance\/baked\/[0-9a-f]{12}\.png$/);
   assert.equal((await refreshBakedEyes(b)).changed, false, 'the same layers, the same pictures');
@@ -160,7 +160,7 @@ test('refreshBakedEyes writes each state\'s finished pictures by content and dro
   setDocument(b, 'eyes', next);
   const r3 = await refreshBakedEyes(b);
   assert.notEqual(r3.baked.default.iris, r1.baked.default.iris);
-  assert.equal(r3.baked.zonedOut.iris, r1.baked.zonedOut.iris, 'a state whose layers did not change keeps its picture');
+  assert.equal(r3.baked.confused.iris, r1.baked.confused.iris, 'a state whose layers did not change keeps its picture');
   const problems = await checkBundle(await writeBundle(b));
   assert.deepEqual(problems.filter((p) => p.severity === 'error'), []);
 });
@@ -180,4 +180,42 @@ test('live texture(): one material updated, the others left as textures() set th
   assert.equal(vrm.byName.Iris.map, tex, 'the same texture, new pixels');
   live.texture('Iris', null);
   assert.equal(vrm.byName.Iris.map.image.data[0], 10, 'back to its own: here the original texture');
+});
+
+// D39: eye states have kinds, and a state may be finished textures alone, made in any app
+test('kinds: a state\'s own, default is standard, an old zonedOut is confused; asking by kind finds the first', { skip: noSpecRepo }, async () => {
+  const b = await fullBundle();
+  const eyes = b.docs.eyes;
+  assert.deepEqual(eyes.states.map((s) => stateKind(s)), ['standard', 'confused', null, 'love']);
+  assert.equal(stateKind({ name: 'zonedOut' }), 'confused');
+  assert.equal(stateKind({ name: 'zonedOut', kind: 'angry' }), 'angry');
+  assert.equal(findEyeState(eyes, { kind: 'love' }).name, 'smitten');
+  assert.equal(findEyeState(eyes, { name: 'squint' }).from, 'default');
+  assert.equal(findEyeState(eyes, { kind: 'angry' }), null);
+});
+
+test('a state of finished textures alone is shown from them, and a refresh keeps them', { skip: noSpecRepo }, async () => {
+  const b = await fullBundle();
+  const eyes = b.docs.eyes;
+  const load = pictureLoader(b.entries);
+  const t = eyeStateTextures(eyes, flattenEyes(eyes, load), 'smitten');
+  const heart = decodePng(b.entries.get(eyes.states.find((s) => s.name === 'smitten').baked.iris));
+  assert.ok(samePixels(t.pictures[eyes.targets.iris.material], heart), 'the iris is the given texture');
+  assert.deepEqual(t.hide, [eyes.targets.highlight.material]);
+  const before = eyes.states.find((s) => s.name === 'smitten').baked.iris;
+  await refreshBakedEyes(b);
+  assert.equal(b.docs.eyes.states.find((s) => s.name === 'smitten').baked.iris, before, 'untouched');
+  assert.ok(b.entries.has(before));
+});
+
+test('a default given as finished textures alone goes into avatar.vrm as given', { skip }, async () => {
+  const spec = specVrm();
+  const b = await fullBundle();
+  const eyes = JSON.parse(JSON.stringify(b.docs.eyes));
+  const heartPath = eyes.states.find((s) => s.name === 'smitten').baked.iris;
+  eyes.states[0] = { name: 'default', baked: { iris: heartPath } }; // painted elsewhere, no layers
+  const textures = layerTextures({ eyes }, b.entries, spec);
+  const out = bakeAvatar(spec, null, { textures }).bytes;
+  const [i] = slots(out, eyes.targets.iris.material);
+  assert.ok(samePixels(i.pic, decodePng(b.entries.get(heartPath))));
 });
