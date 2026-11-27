@@ -53,6 +53,10 @@ function bandColour(pic, shade, y0, y1) {
   return [r, g, b].map((v) => Math.round(Math.min(1, v / s) * 1000) / 1000);
 }
 
+const lin = (v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+const srgb = (l) => (l <= 0.0031308 ? l * 12.92 : 1.055 * l ** (1 / 2.4) - 0.055);
+const r3 = (v) => Math.round(v * 1000) / 1000;
+
 const picture = (w, h, f) => {
   const data = new Uint8ClampedArray(w * h * 4);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) data.set(f(x, y), (y * w + x) * 4);
@@ -64,7 +68,8 @@ const picture = (w, h, f) => {
  * the iris art's shape, the art's lightness over it as shading (multiply, brightest parts white), and the highlight art as its own layer. Starter
  * states: default, confused (the eye colour inside a black outer ring, the highlight hidden; the specification's
  * `zonedOut`, renamed by the operator, SPEC-QUESTIONS #108) and squint (default at
- * 0.78). Layers carry `role` (eyeColour, overlay, highlight) for the Creator's controls (SPEC-QUESTIONS #110,
+ * 0.78). The sclera is the base's eye-white art with a colour over it. Layers carry `role` (eyeColour, overlay,
+ * highlight, sclera) for the Creator's controls (SPEC-QUESTIONS #110,
  * proposed; readers ignore an unknown key).
  * → { doc, pictures: Map(path → PNG bytes) } to put in a bundle (setEntry each, then setDocument 'eyes')
  */
@@ -95,6 +100,13 @@ export async function starterEyes(baseGlb, { name = 'Starter' } = {}) {
   const inRing = (x, y) => [eyes.left, eyes.right].some((e) => { const d = ((x + 0.5 - e.center[0]) / e.radius[0]) ** 2 + ((y + 0.5 - e.center[1]) / e.radius[1]) ** 2; return d < 1 && d > 0.72; });
   const ringPath = await store(picture(w, h, (x, y) => (inRing(x, y) ? [0, 0, 0, 255] : [0, 0, 0, 0])));
   const highlightPath = art.highlight ? await store(art.highlight) : null;
+  // the sclera: the base's eye-white art, and over it a colour that multiplies it in linear light (white: unchanged), so
+  // the art's shading stays when the colour changes
+  const whitePath = art.white ? await store(art.white) : null;
+  const sclera = whitePath ? [
+    { id: 'white-art', name: 'Eye white', target: 'white', kind: 'image', image: whitePath },
+    { id: 'sclera', name: 'Sclera colour', target: 'white', kind: 'adjust', multiply: [1, 1, 1], role: 'sclera' },
+  ] : [];
   const top = eyes.left.center[1] - eyes.left.radius[1], bottom = eyes.left.center[1] + eyes.left.radius[1];
   const third = Math.round((bottom - top) / 3);
   const colour = { type: 'linear', stops: [{ at: 0, color: bandColour(art.iris, shade, top, top + third) }, { at: 1, color: bandColour(art.iris, shade, bottom - third, bottom) }] };
@@ -104,7 +116,7 @@ export async function starterEyes(baseGlb, { name = 'Starter' } = {}) {
     format: 'vrmxa-eyes', version: 1, name, size, targets, eyes,
     fills: { eyeColour: colour },
     states: [
-      { name: 'default', layers: [fill, { id: 'shading', name: 'Shading', target: 'iris', kind: 'image', image: shadePath, blend: 'multiply', role: 'overlay' }, ...highlight] },
+      { name: 'default', layers: [...sclera, fill, { id: 'shading', name: 'Shading', target: 'iris', kind: 'image', image: shadePath, blend: 'multiply', role: 'overlay' }, ...highlight] },
       { name: 'confused', layers: [fill, { id: 'ring', name: 'Outer ring', target: 'iris', kind: 'image', image: ringPath }], hide: ['highlight'] },
       { name: 'squint', from: 'default', scale: 0.78 },
     ],
@@ -127,6 +139,7 @@ function roles(doc) {
     fill: fillName,
     highlight: pick('highlight', (l) => l.target === 'highlight'),
     overlay: pick('overlay', (l) => l.kind === 'image' && l.target === 'iris' && (l.blend || 'normal') !== 'normal'),
+    sclera: pick('sclera', (l) => l.kind === 'adjust' && l.target === 'white' && Array.isArray(l.multiply)),
   };
 }
 
@@ -134,7 +147,8 @@ const layerOf = (doc, { state, id }) => doc.states.find((s) => s.name === state)
 
 /**
  * What the Creator can change in a design, and how it stands now.
- * → { colour: { fill, type, stops: [{ at, color }] } | null, highlight: { strength, count } | null, overlay: { strength, count } | null }
+ * → { colour: { fill, type, stops: [{ at, color }] } | null, highlight: { strength, count } | null, overlay: { strength, count } | null,
+ *     sclera: { color: [r, g, b] (sRGB, as shown over white art) } | null }
  */
 export function creatorControls(doc) {
   const r = roles(doc);
@@ -144,6 +158,7 @@ export function creatorControls(doc) {
     colour: f ? { fill: r.fill, type: f.type, ...(f.type === 'solid' ? { stops: [{ at: 0, color: f.color }] } : { stops: f.stops.map((s) => ({ at: s.at, color: [...s.color] })) }) } : null,
     highlight: strength(r.highlight),
     overlay: strength(r.overlay),
+    sclera: r.sclera.length ? { color: (layerOf(doc, r.sclera[0])?.multiply || [1, 1, 1]).map((v) => r3(srgb(Math.min(1, Math.max(0, v))))) } : null,
   };
 }
 
@@ -153,6 +168,7 @@ const okColour = (c) => Array.isArray(c) && c.length === 3 && c.every((v) => Num
  * Apply the Creator's controls to a design, changing nothing else (EYE-18). changes:
  *   colour: [r, g, b] (a solid eye colour) or { top: [r,g,b], bottom: [r,g,b] } (a gradient, top to bottom)
  *   highlight, overlay: 0 to 1, the opacity of every layer of that role
+ *   sclera: [r, g, b], the colour the eye white shows where its art is white (stored as a linear multiply)
  * → a new document
  */
 export function applyCreator(doc, changes = {}) {
@@ -164,6 +180,11 @@ export function applyCreator(doc, changes = {}) {
     if (okColour(c)) next.fills[r.fill] = { type: 'solid', color: c.map((v) => Math.round(v * 1000) / 1000) };
     else if (okColour(c?.top) && okColour(c?.bottom)) next.fills[r.fill] = { type: 'linear', stops: [{ at: 0, color: c.top.map((v) => Math.round(v * 1000) / 1000) }, { at: 1, color: c.bottom.map((v) => Math.round(v * 1000) / 1000) }] };
     else throw new Error('an eye colour is [r, g, b] or { top: [r, g, b], bottom: [r, g, b] }, each 0 to 1');
+  }
+  if (changes.sclera !== undefined) {
+    if (!okColour(changes.sclera)) throw new Error('a sclera colour is [r, g, b], each 0 to 1');
+    if (!r.sclera.length) throw new Error('this design has no sclera colour layer');
+    for (const ref of r.sclera) layerOf(next, ref).multiply = changes.sclera.map((v) => Math.round(lin(v) * 1e6) / 1e6);
   }
   for (const role of ['highlight', 'overlay']) {
     if (changes[role] === undefined) continue;

@@ -55,6 +55,7 @@ test('the Creator reads and changes the colour, the highlight and the overlay, a
   assert.equal(c.colour.fill, 'eyeColour');
   assert.equal(c.colour.type, 'linear');
   assert.deepEqual([c.highlight, c.overlay], [{ strength: 1, count: 1 }, { strength: 1, count: 1 }]);
+  assert.ok(c.sclera);
   const amber = applyCreator(doc, { colour: { top: [0.5, 0.25, 0.05], bottom: [0.95, 0.7, 0.3] }, highlight: 0.5, overlay: 0.25 });
   const a = creatorControls(amber);
   assert.deepEqual(a.colour.stops.map((s) => s.color), [[0.5, 0.25, 0.05], [0.95, 0.7, 0.3]]);
@@ -67,6 +68,17 @@ test('the Creator reads and changes the colour, the highlight and the overlay, a
   // every state that shows the eye colour follows it (EYE-13)
   const before = flattenEyes(doc, loaderOf(pictures)), after = flattenEyes(solid, loaderOf(pictures));
   for (const s of ['default', 'confused', 'squint']) assert.ok(!before[s].iris.data.every((v, i) => v === after[s].iris.data[i]), s);
+  // the sclera: white leaves Spec's eye white as it is; a colour tints it, keeping the art's shading
+  assert.deepEqual(c.sclera, { color: [1, 1, 1] });
+  const spec = specVrm();
+  const specWhite = materialPicture(spec, doc.targets.white.material).data;
+  assert.ok(flattenEyes(doc, loaderOf(pictures)).default.white.data.every((v, i) => v === specWhite[i]));
+  const blue = applyCreator(doc, { sclera: [0.85, 0.9, 1] });
+  assert.deepEqual(creatorControls(blue).sclera, { color: [0.85, 0.9, 1] });
+  const w0 = flattenEyes(doc, loaderOf(pictures)).default.white, w1 = flattenEyes(blue, loaderOf(pictures)).default.white;
+  const k = (256 * 1024 + 766) * 4;
+  assert.ok(w1.data[k] < w0.data[k] && w1.data[k + 2] === w0.data[k + 2], 'red down, blue kept');
+  assert.throws(() => applyCreator(doc, { sclera: 'blue' }), /a sclera colour is/);
   assert.throws(() => applyCreator(doc, { colour: [2, 0, 0] }), /an eye colour is/);
   assert.throws(() => applyCreator(doc, { highlight: 1.5 }), /highlight strength is 0 to 1/);
 });
@@ -78,5 +90,6 @@ test('a design without roles: the shared fill, the highlight target and blended 
   assert.equal(c.colour.fill, 'eyeColour');
   assert.equal(c.highlight, null, 'Mira\'s eyes have no highlight layers');
   assert.deepEqual(c.overlay, { strength: 0.9, count: 1 });
+  assert.equal(c.sclera, null, 'nor a sclera layer');
   assert.throws(() => applyCreator(eyes, { highlight: 0.5 }), /no highlight layers/);
 });
